@@ -29,9 +29,25 @@ kernel = np.ones((3, 17), np.uint8)
 closing = cv2.morphologyEx(binaryImg, cv2.MORPH_CLOSE, kernel)
 cv2.imshow('closing', closing)
 
-# image, contours, hierarchy = cv2.findContours(closing, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-# image =  cv2.drawContours(image, contours, 3, (15, 15, 234))
-# cv2.imshow('contours', image)
+image, contours, hierarchy = cv2.findContours(closing, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
+cv2.imshow('contours', image)
+
+boundRect = [None for _ in range(0, len(contours))]
+for i in range(0, len(contours)):
+    approxCurve = cv2.approxPolyDP(contours[i], 3, True)
+    boundRect[i] = cv2.boundingRect(approxCurve)
+    center, radius = cv2.minEnclosingCircle(approxCurve)
+
+# print(approxCurve)
+
+for i in range(0, len(contours)):
+    image = cv2.drawContours(image, contours, i, (0,0,255))
+    # image = cv2.rectangle(image, boundRect[i].tl(), boundRect[i].br(), (255,0,0), 2, 8, 0)
+    image = cv2.rectangle(image, (130,90), (150,100), (0,0,200))
+cv2.imshow('rect', image)
+
+
+# size: 440*140 ::3.142857142857143
 
 cv2.waitKey(0)
 cv2.destroyAllWindows()
